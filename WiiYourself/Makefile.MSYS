@@ -1,0 +1,76 @@
+#################################################################
+## Makefile for WiiYourself for MinGW and MSYS
+## Dario Segura, 2008.
+#################################################################
+
+PROJECT = WiiYourself_MinGW
+CC = g++.exe
+
+OBJ_DIR = MinGW
+OUTPUT_DIR = $(OBJ_DIR)/bin
+TARGET = wiimote.dll
+CFLAGS = -pipe  -Wall -g0 -O2 -frtti -fexceptions 
+LDFLAGS = -pipe -shared -Wl,--output-def,$(OBJ_DIR)/wiimote.def,--out-implib,$(OBJ_DIR)/lib/libwiimote.dll.a -s -lwinmm -lhid -lsetupapi
+
+ifeq ($(OS),Windows_NT)
+  NULL =
+else
+  NULL = nul
+endif
+
+SRC_OBJS = \
+  $(OBJ_DIR)/wiimote.o
+
+define build_target
+@echo Linking...
+@$(CC) -o "$(OUTPUT_DIR)/$(TARGET)" $(SRC_OBJS) $(LDFLAGS)
+endef
+
+define compile_source
+@echo Creating Folder Structure...
+@mkdir $(OBJ_DIR)
+@mkdir $(OBJ_DIR)/include
+@mkdir $(OBJ_DIR)/lib
+@mkdir $(OBJ_DIR)/bin
+@echo Copying Header Files...
+@cp wiimote.h $(OBJ_DIR)/include/wiimote.h
+@cp wiimote_state.h $(OBJ_DIR)/include/wiimote_state.h
+@echo Compiling $<
+@$(CC) $(CFLAGS) -c "$<" -o "$@"
+endef
+
+.PHONY: print_header directories
+
+$(TARGET): print_header directories $(SRC_OBJS)
+	$(build_target)
+
+.PHONY: clean cleanall
+
+cleanall:
+	@echo Deleting all files for 'WiiYourself'
+	-@rm $(OBJ_DIR)/bin/*.*
+	-@rm $(OBJ_DIR)/lib/*.*
+	-@rm $(OBJ_DIR)/include/*.*
+	-@rm $(OBJ_DIR)/*.*
+	-@rmdir $(OBJ_DIR)/bin
+	-@rmdir $(OBJ_DIR)/lib
+	-@rmdir $(OBJ_DIR)/include
+	-@rmdir $(OBJ_DIR)
+
+clean:
+	@echo Deleting intermediate files for 'WiiYourself'
+	-@rm $(OBJ_DIR)/bin/*.*
+	-@rm $(OBJ_DIR)/lib/*.*
+	-@rm $(OBJ_DIR)/*.*
+
+print_header:
+	@echo ----------Configuration: WiiYourself: MinGW----------
+
+directories:
+	@echo Checking direcories...
+
+$(OBJ_DIR)/wiimote.o: wiimote.cpp	\
+wiimote.h	\
+wiimote_state.h
+	$(compile_source)
+

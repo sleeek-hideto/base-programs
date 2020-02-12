@@ -1,0 +1,17 @@
+*.wav
+*.exe
+*.lib
+*.bin
+*.dll
+*.pdb
+*.idb
+*.obj
+*.txt
+*.ncb
+*.suo
+*.user
+*.rc
+*.aps
+*.htm
+
+_Sample
